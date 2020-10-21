@@ -1,0 +1,24 @@
+sudo: required
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - docker build -t vickies/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true vickies/react-test npm test
+
+after_success:
+  - docker build -t vickies/multi-client ./client
+  - docker build -t vickies/multi-nginx ./nginx
+  - docker build -t vickies/multi-server ./server
+  - docker build -t vickies/multi-worker ./worker
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images and push them to docker hub
+  - docker push vickies/multi-client
+  - docker push vickies/multi-nginx
+  - docker push vickies/multi-server
+  - docker push vickies/multi-worker
