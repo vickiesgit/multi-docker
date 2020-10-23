@@ -18,7 +18,19 @@ after_success:
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # Take those images and push them to docker hub
-  - docker push vickies/multi-client
-  - docker push vickies/multi-nginx
-  - docker push vickies/multi-server
-  - docker push vickies/multi-worker
+  - docker push vickiesdocker/multi-client
+  - docker push vickiesdocker/multi-nginx
+  - docker push vickiesdocker/multi-server
+  - docker push vickiesdocker/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'us-west-2'
+  app: 'multi-docker'
+  env: 'MultiDocker-env'
+  bucket_name: 'elasticbeanstalk-us-west-2-448685331894'
+  bucket_path: 'docker-multi'
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
